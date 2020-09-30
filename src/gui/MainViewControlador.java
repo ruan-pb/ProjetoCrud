@@ -31,7 +31,7 @@ public class MainViewControlador implements Initializable {
 
 	@FXML
 	public void onBtMenuDepartamento() {
-		System.out.println("Menu departamento");
+		loadView("/gui/DepartmentList.fxml");
 	}
 
 	@FXML
