@@ -3,7 +3,9 @@ package gui;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
+import Entidades.Department;
 import Entidades.DepartmenteService;
 import application.Main;
 import gui.util.Alerts;
@@ -32,12 +34,15 @@ public class MainViewControlador implements Initializable {
 
 	@FXML
 	public void onBtMenuDepartamento() {
-		loadView2("/gui/DepartmentList.fxml");
+		loadView("/gui/DepartmentList.fxml", (DepartmentListController controller)-> {
+			controller.setDepartment(new DepartmenteService());
+			controller.UpdateTableView();
+		});
 	}
 
 	@FXML
 	public void onBtMenuSobre() {
-		loadView("/gui/AboutView.fxml");
+		loadView("/gui/AboutView.fxml",x->{});
 	}
 
 	@Override
@@ -45,22 +50,7 @@ public class MainViewControlador implements Initializable {
 
 	}
 
-	private synchronized void loadView(String absoluteName) {
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
-			VBox vBox = loader.load();
-			Scene cena = Main.pegarMinhaCena();
-			VBox MainVbox = (VBox)((ScrollPane)cena.getRoot()).getContent();
-			Node mainMenu = MainVbox.getChildren().get(0);
-			MainVbox.getChildren().clear();
-			MainVbox.getChildren().add(mainMenu);
-			MainVbox.getChildren().addAll(vBox.getChildren());
-		}
-		catch(IOException e) {
-			Alerts.Aviso("IOException", "Falha ao carregar pagina", e.getMessage(), AlertType.ERROR);
-		}
-	}
-	private synchronized void loadView2(String absoluteName) {
+	private synchronized <T>void loadView(String absoluteName,Consumer<T> InitializingAction) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			VBox vBox = loader.load();
@@ -71,14 +61,13 @@ public class MainViewControlador implements Initializable {
 			MainVbox.getChildren().add(mainMenu);
 			MainVbox.getChildren().addAll(vBox.getChildren());
 			
-			// para mostrar os dados da lista na tabela
-			DepartmentListController controller = loader.getController();
-			controller.setDepartment(new DepartmenteService());
-			controller.UpdateTableView();
+			T controller = loader.getController();
+			InitializingAction.accept(controller);
 		}
 		catch(IOException e) {
 			Alerts.Aviso("IOException", "Falha ao carregar pagina", e.getMessage(), AlertType.ERROR);
 		}
 	}
+	
 
 }
