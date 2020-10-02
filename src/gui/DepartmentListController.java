@@ -1,11 +1,11 @@
 package gui;
 
 import java.net.URL;
+
 import java.util.List;
 import java.util.ResourceBundle;
 
-import Entidades.Department;
-import Entidades.DepartmenteService;
+
 import application.Main;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,10 +16,12 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import model.Service.DepartmentService;
+import model.entities.Department;
 
 public class DepartmentListController implements Initializable {
 	
-	private DepartmenteService departmentServico;
+	private DepartmentService departmentServico;
 	
 	@FXML
 	private TableView<Department> tableViewDepartment;
@@ -37,7 +39,7 @@ public class DepartmentListController implements Initializable {
 		System.out.println("Botao New em Ação");
 	}
 	
-	public void setDepartment(DepartmenteService dpService) {
+	public void setDepartment(DepartmentService dpService) {
 		this.departmentServico = dpService;
 	}
 
@@ -50,7 +52,7 @@ public class DepartmentListController implements Initializable {
 	private void InitializeNodes() {
 		// para "Instancia" as tabelas 
 		tableColumnId.setCellValueFactory(new PropertyValueFactory<>("Id"));
-		tableColumnNome.setCellValueFactory(new PropertyValueFactory<>("Nome"));
+		tableColumnNome.setCellValueFactory(new PropertyValueFactory<>("Name"));
 		
 		// para a tableview fica do tamanho da tela
 		Stage stage = (Stage)Main.pegarMinhaCena().getWindow();

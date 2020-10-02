@@ -5,8 +5,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
-import Entidades.Department;
-import Entidades.DepartmenteService;
 import application.Main;
 import gui.util.Alerts;
 import javafx.fxml.FXML;
@@ -18,6 +16,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
+import model.Service.DepartmentService;
 
 public class MainViewControlador implements Initializable {
 	@FXML
@@ -35,7 +34,7 @@ public class MainViewControlador implements Initializable {
 	@FXML
 	public void onBtMenuDepartamento() {
 		loadView("/gui/DepartmentList.fxml", (DepartmentListController controller)-> {
-			controller.setDepartment(new DepartmenteService());
+			controller.setDepartment(new DepartmentService());
 			controller.UpdateTableView();
 		});
 	}
