@@ -1,7 +1,6 @@
 package gui;
 
 import java.io.IOException;
-
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -22,6 +21,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Service.DepartmentService;
@@ -42,13 +42,12 @@ public class DepartmentListController implements Initializable {
 	
 	private ObservableList<Department> obsList;
 	
-	
-	//buscar a janela do formulario
 	@FXML
-	public void onButtonAction(ActionEvent event) {
-		Stage parentStage = Utils.currentStage(event);
-		createDialogForm("/gui/DepartmentForm.fxml", parentStage);
+	public void onBtNewAction(ActionEvent evento) {
+		Stage stage = Utils.currentStage(evento);
+		createDialogForm("/gui/DepartmentForm.fxml", stage);
 	}
+	
 	
 	public void setDepartment(DepartmentService dpService) {
 		this.departmentServico = dpService;
@@ -78,16 +77,18 @@ public class DepartmentListController implements Initializable {
 		obsList = FXCollections.observableArrayList(lista);
 		tableViewDepartment.setItems(obsList);
 	}
-	private void createDialogForm(String absoluteName,Stage parentStage) {
+	private synchronized void createDialogForm(String absoluteName,Stage parentStage) {
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
-			Pane pane = loader.load();
-			
+			FXMLLoader carregar = new FXMLLoader(getClass().getResource(absoluteName));
+			System.out.println("OK01");
+			Pane age = carregar.load();
+			System.out.println("OK02");
 			//carrega a janela do formulario para preencher
 			Stage dialogStage = new Stage();
+			System.out.println("OK03");
 			dialogStage.setTitle("Entre com os dados do departmento");
 			
-			dialogStage.setScene(new Scene(pane));
+			dialogStage.setScene(new Scene(age));
 			
 			dialogStage.setResizable(false);
 			dialogStage.initOwner(parentStage);
@@ -95,7 +96,7 @@ public class DepartmentListController implements Initializable {
 			dialogStage.showAndWait();
 		}
 		catch(IOException e) {
-			Alerts.Aviso("IOException", "Erro ao carregar a pagina", e.getMessage(), AlertType.ERROR);
+			Alerts.Aviso("IOException", "Não foi possivel carregar a pagina", e.getMessage(),AlertType.ERROR);
 		}
 		
 	}
