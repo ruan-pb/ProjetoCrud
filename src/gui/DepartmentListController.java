@@ -85,7 +85,9 @@ public class DepartmentListController implements Initializable {
 			Pane age = carregar.load();
 			
 			DepartmentFormController controller = carregar.getController();
-			
+			controller.setDepartmentService(new DepartmentService());
+			controller.setDp(dp);
+			controller.AtulizarFormulario();
 			
 			
 			

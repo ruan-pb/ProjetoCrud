@@ -4,12 +4,18 @@ package gui;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import db.DbException;
+import gui.util.Alerts;
 import gui.util.Constrains;
+import gui.util.Utils;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import model.Service.DepartmentService;
 import model.entities.Department;
 
 public class DepartmentFormController implements Initializable{
@@ -21,6 +27,8 @@ public class DepartmentFormController implements Initializable{
 	
 	
 	private Department entidade;
+	
+	private DepartmentService departmentService;
 	
 	@FXML
 	private Label nomeError;
@@ -35,8 +43,27 @@ public class DepartmentFormController implements Initializable{
 
 	
 	@FXML
-	public void btSalvar() {
-		System.out.println("Salvado");
+	public void btSalvar(ActionEvent event) {
+		if(entidade == null) {
+			throw new IllegalStateException("Entidade está vazia");
+		}
+		if(departmentService == null) {
+			throw new IllegalStateException("Department Service está vazio");
+		}
+		try {
+			entidade = getFormatDate();
+			departmentService.salvarAtualizacao(entidade);
+			Utils.currentStage(event).close();
+		}
+		catch(DbException e) {
+			Alerts.Aviso("Erro ao adicionar elemento", null,e.getMessage(), AlertType.ERROR);
+		}
+	}
+	private Department getFormatDate() {
+		Department dp = new Department();
+		dp.setId(Utils.tryParseInt(id.getText()));
+		dp.setName(textNome.getText());
+		return dp;
 	}
 	@FXML
 	public void btCancelar() {
@@ -46,6 +73,9 @@ public class DepartmentFormController implements Initializable{
 	
 	public void setDp(Department dp) {
 		this.entidade =dp; 
+	}
+	public void setDepartmentService(DepartmentService dps) {
+		this.departmentService = dps;
 	}
 
 	
