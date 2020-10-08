@@ -89,9 +89,12 @@ public class DepartmentListController implements Initializable {
 			dialogStage.setTitle("Entre com os dados do departmento");
 			
 			dialogStage.setScene(new Scene(age));
-			
+			//pode ou não ser redimencionada
 			dialogStage.setResizable(false);
+			
+			//função para saber quem é o pai da janela
 			dialogStage.initOwner(parentStage);
+			//enquanto você não fechar essa janela você não consegue mexer na janela anterios
 			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.showAndWait();
 		}
