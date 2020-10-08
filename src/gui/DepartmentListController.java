@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import application.Main;
+import gui.listener.DataChangeListener;
 import gui.util.Alerts;
 import gui.util.Utils;
 import javafx.collections.FXCollections;
@@ -21,13 +22,12 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Service.DepartmentService;
 import model.entities.Department;
 
-public class DepartmentListController implements Initializable {
+public class DepartmentListController implements Initializable,DataChangeListener {
 	
 	private DepartmentService departmentServico;
 	
@@ -87,6 +87,8 @@ public class DepartmentListController implements Initializable {
 			DepartmentFormController controller = carregar.getController();
 			controller.setDepartmentService(new DepartmentService());
 			controller.setDp(dp);
+			// passando para o metodo a própria classe ou metodo, (não entendi direito)
+			controller.subscribeDataChangelistener(this);
 			controller.AtulizarFormulario();
 			
 			
@@ -112,6 +114,14 @@ public class DepartmentListController implements Initializable {
 		catch(IOException e) {
 			Alerts.Aviso("IOException", "Não foi possivel carregar a pagina", e.getMessage(),AlertType.ERROR);
 		}
+		
+	}
+
+
+	@Override
+	// atualizar a tabela simultaneamente 
+	public void onDataChange() {
+		this.UpdateTableView();
 		
 	}
 

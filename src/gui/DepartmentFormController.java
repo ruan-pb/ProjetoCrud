@@ -2,9 +2,14 @@ package gui;
 
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import db.DbException;
+import gui.listener.DataChangeListener;
 import gui.util.Alerts;
 import gui.util.Constrains;
 import gui.util.Utils;
@@ -15,6 +20,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import model.Exceptions.ValidationException;
 import model.Service.DepartmentService;
 import model.entities.Department;
 
@@ -29,6 +35,8 @@ public class DepartmentFormController implements Initializable{
 	private Department entidade;
 	
 	private DepartmentService departmentService;
+	
+	private List<DataChangeListener> dataChangeListener = new ArrayList<>();
 	
 	@FXML
 	private Label nomeError;
@@ -53,21 +61,40 @@ public class DepartmentFormController implements Initializable{
 		try {
 			entidade = getFormatDate();
 			departmentService.salvarAtualizacao(entidade);
+			notifyDataChangeListener();
 			Utils.currentStage(event).close();
 		}
 		catch(DbException e) {
 			Alerts.Aviso("Erro ao adicionar elemento", null,e.getMessage(), AlertType.ERROR);
 		}
+		catch(ValidationException e){
+			setErrorMessages(e.getErros());
+		}
+	}
+	// metodo de notificar a tabela que foi acrecentado um novo elemento
+	private void notifyDataChangeListener() {
+		for(DataChangeListener listener :this.dataChangeListener) {
+			listener.onDataChange();
+		}
+		
 	}
 	private Department getFormatDate() {
 		Department dp = new Department();
+		ValidationException exception = new ValidationException("Erro na validação");
+		
 		dp.setId(Utils.tryParseInt(id.getText()));
+		if(textNome.getText() == null || textNome.getText().trim().equals("")) {
+			exception.addError("name", "O campo não pode ser vazio");
+		}
 		dp.setName(textNome.getText());
+		if(exception.getErros().size() > 0) {
+			throw exception;
+		}
 		return dp;
 	}
 	@FXML
-	public void btCancelar() {
-		System.out.println("cancelado");
+	public void btCancelar(ActionEvent event) {
+		Utils.currentStage(event).close();
 	}
 	
 	
@@ -76,6 +103,10 @@ public class DepartmentFormController implements Initializable{
 	}
 	public void setDepartmentService(DepartmentService dps) {
 		this.departmentService = dps;
+	}
+	
+	public void subscribeDataChangelistener(DataChangeListener listener) {
+		this.dataChangeListener.add(listener);
 	}
 
 	
@@ -96,6 +127,16 @@ public class DepartmentFormController implements Initializable{
 		}
 		id.setText(String.valueOf(this.entidade.getId()));
 		textNome.setText(this.entidade.getName());
+	}
+	
+	private void setErrorMessages(Map<String,String> erros) {
+		Set<String> fields = erros.keySet();
+		
+		if(fields.contains("name")) {
+			this.nomeError.setText(erros.get("name"));
+		}
+		
+		
 	}
 
 }
