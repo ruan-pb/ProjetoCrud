@@ -86,10 +86,11 @@ public class DepartmentFormController implements Initializable{
 		if(textNome.getText() == null || textNome.getText().trim().equals("")) {
 			exception.addError("name", "O campo não pode ser vazio");
 		}
-		dp.setName(textNome.getText());
+		
 		if(exception.getErros().size() > 0) {
 			throw exception;
 		}
+		dp.setName(textNome.getText());
 		return dp;
 	}
 	@FXML
@@ -129,6 +130,8 @@ public class DepartmentFormController implements Initializable{
 		textNome.setText(this.entidade.getName());
 	}
 	
+	
+	// comando para editar os erros da caixa label
 	private void setErrorMessages(Map<String,String> erros) {
 		Set<String> fields = erros.keySet();
 		
