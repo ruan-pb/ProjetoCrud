@@ -21,10 +21,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.Exceptions.ValidationException;
-import model.Service.DepartmentService;
-import model.entities.Department;
+import model.Service.SellerService;
+import model.entities.Seller;
 
-public class DepartmentFormController implements Initializable{
+public class SellerFormController implements Initializable{
 	
 	@FXML
 	private TextField textNome;
@@ -32,9 +32,9 @@ public class DepartmentFormController implements Initializable{
 	private TextField id;
 	
 	
-	private Department entidade;
+	private Seller entidade;
 	
-	private DepartmentService departmentService;
+	private SellerService departmentService;
 	
 	private List<DataChangeListener> dataChangeListener = new ArrayList<>();
 	
@@ -56,7 +56,7 @@ public class DepartmentFormController implements Initializable{
 			throw new IllegalStateException("Entidade está vazia");
 		}
 		if(departmentService == null) {
-			throw new IllegalStateException("Department Service está vazio");
+			throw new IllegalStateException("Seller Service está vazio");
 		}
 		try {
 			entidade = getFormatDate();
@@ -78,8 +78,8 @@ public class DepartmentFormController implements Initializable{
 		}
 		
 	}
-	private Department getFormatDate() {
-		Department dp = new Department();
+	private Seller getFormatDate() {
+		Seller dp = new Seller();
 		ValidationException exception = new ValidationException("Erro na validação");
 		
 		dp.setId(Utils.tryParseInt(id.getText()));
@@ -99,10 +99,10 @@ public class DepartmentFormController implements Initializable{
 	}
 	
 	
-	public void setDp(Department dp) {
+	public void setDp(Seller dp) {
 		this.entidade =dp; 
 	}
-	public void setDepartmentService(DepartmentService dps) {
+	public void setSellerService(SellerService dps) {
 		this.departmentService = dps;
 	}
 	
