@@ -30,8 +30,8 @@ public class MainViewControlador implements Initializable {
 	@FXML
 	public void onBtMenuVendedor() {
 		loadView("/gui/SellerList.fxml", (SellerListController controller)-> {
-			controller.setSeller(new SellerService());
-			controller.UpdateTableView();
+			controller.setSellerService(new SellerService());
+			controller.updateTableView();
 		});
 	}
 

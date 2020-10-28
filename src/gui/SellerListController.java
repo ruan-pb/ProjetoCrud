@@ -33,129 +33,107 @@ import javafx.stage.Stage;
 import model.Service.SellerService;
 import model.entities.Seller;
 
+
 public class SellerListController implements Initializable, DataChangeListener {
 
-	private SellerService SellerServico;
+	private SellerService service;
 
 	@FXML
 	private TableView<Seller> tableViewSeller;
-	@FXML
-	private Button botaoNew;
+
 	@FXML
 	private TableColumn<Seller, Integer> tableColumnId;
+
 	@FXML
-	private TableColumn<Seller, String> tableColumnNome;
+	private TableColumn<Seller, String> tableColumnName;
 
 	@FXML
 	private TableColumn<Seller, String> tableColumnEmail;
-
+	
 	@FXML
 	private TableColumn<Seller, Date> tableColumnBirthDate;
 	
 	@FXML
 	private TableColumn<Seller, Double> tableColumnBaseSalary;
 	
-	
-	
-	
 	@FXML
-	private TableColumn<Seller, Seller> tableColumnEdit;
+	private TableColumn<Seller, Seller> tableColumnEDIT;
 
 	@FXML
-	private TableColumn<Seller, Seller> tableColumnRemove;
+	private TableColumn<Seller, Seller> tableColumnREMOVE;
+
+	@FXML
+	private Button btNew;
 
 	private ObservableList<Seller> obsList;
 
 	@FXML
-	public void onBtNewAction(ActionEvent evento) {
-		Stage stage = Utils.currentStage(evento);
-		Seller dp = new Seller();
-		createDialogForm(dp, "/gui/SellerForm.fxml", stage);
+	public void onBtNewAction(ActionEvent event) {
+		Stage parentStage = Utils.currentStage(event);
+		Seller obj = new Seller();
+		createDialogForm(obj, "/gui/SellerForm.fxml", parentStage);
 	}
 
-	public void setSeller(SellerService dpService) {
-		this.SellerServico = dpService;
+	public void setSellerService(SellerService service) {
+		this.service = service;
 	}
 
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-		InitializeNodes();
-
+		initializeNodes();
 	}
 
-	// instanciar as colunas da tabela com cada tributo
-	private void InitializeNodes() {
-		// para "Instancia" as tabelas
+	private void initializeNodes() {
 		tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
-		tableColumnNome.setCellValueFactory(new PropertyValueFactory<>("name"));
+		tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
 		tableColumnEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
 		tableColumnBirthDate.setCellValueFactory(new PropertyValueFactory<>("birthDate"));
 		Utils.formatTableColumnDate(tableColumnBirthDate, "dd/MM/yyyy");
 		tableColumnBaseSalary.setCellValueFactory(new PropertyValueFactory<>("baseSalary"));
 		Utils.formatTableColumnDouble(tableColumnBaseSalary, 2);
 
-		// para a tableview fica do tamanho da tela
 		Stage stage = (Stage) Main.pegarMinhaCena().getWindow();
 		tableViewSeller.prefHeightProperty().bind(stage.heightProperty());
-
 	}
 
-	public void UpdateTableView() {
-		if (SellerServico == null) {
-			throw new IllegalStateException("Não pode ser valor nulo");
+	public void updateTableView() {
+		if (service == null) {
+			throw new IllegalStateException("Service was null");
 		}
-		List<Seller> lista = SellerServico.findAll();
-		obsList = FXCollections.observableArrayList(lista);
+		List<Seller> list = service.findAll();
+		obsList = FXCollections.observableArrayList(list);
 		tableViewSeller.setItems(obsList);
 		initEditButtons();
 		initRemoveButtons();
 	}
 
-	private synchronized void createDialogForm(Seller dp, String absoluteName, Stage parentStage) {
+	private void createDialogForm(Seller obj, String absoluteName, Stage parentStage) {
 		try {
-			
-			FXMLLoader carregar = new FXMLLoader(getClass().getResource(absoluteName));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
+			Pane pane = loader.load();
 
-			Pane age = carregar.load();
-
-			SellerFormController controller = carregar.getController();
+			SellerFormController controller = loader.getController();
+			controller.setSeller(obj);
 			controller.setSellerService(new SellerService());
-			controller.setDp(dp);
-			// passando para o metodo a própria classe ou metodo, (não entendi direito)
-			controller.subscribeDataChangelistener(this);
-			controller.AtulizarFormulario();
+			controller.subscribeDataChangeListener(this);
+			controller.updateFormData();
 
-			// carrega a janela do formulario para preencher
 			Stage dialogStage = new Stage();
-
-			dialogStage.setTitle("Entre com os dados do Sellero");
-
-			dialogStage.setScene(new Scene(age));
-			// pode ou não ser redimencionada
+			dialogStage.setTitle("Enter Seller data");
+			dialogStage.setScene(new Scene(pane));
 			dialogStage.setResizable(false);
-
-			// função para saber quem é o pai da janela
 			dialogStage.initOwner(parentStage);
-			// enquanto você não fechar essa janela você não consegue mexer na janela
-			// anterios
 			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.showAndWait();
 		} catch (IOException e) {
-			Alerts.Aviso("IOException", "Não foi possivel carregar a pagina", e.getMessage(), AlertType.ERROR);
+			Alerts.Aviso("IO Exception", "Error loading view", e.getMessage(), AlertType.ERROR);
 		}
-
 	}
 
-	@Override
-	// atualizar a tabela simultaneamente
-	public void onDataChange() {
-		this.UpdateTableView();
-
-	}
 
 	private void initEditButtons() {
-		tableColumnEdit.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
-		tableColumnEdit.setCellFactory(param -> new TableCell<Seller, Seller>() {
+		tableColumnEDIT.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+		tableColumnEDIT.setCellFactory(param -> new TableCell<Seller, Seller>() {
 			private final Button button = new Button("edit");
 
 			@Override
@@ -166,14 +144,15 @@ public class SellerListController implements Initializable, DataChangeListener {
 					return;
 				}
 				setGraphic(button);
-				button.setOnAction(event -> createDialogForm(obj, "/gui/SellerForm.fxml", Utils.currentStage(event)));
+				button.setOnAction(
+						event -> createDialogForm(obj, "/gui/SellerForm.fxml", Utils.currentStage(event)));
 			}
 		});
 	}
 
 	private void initRemoveButtons() {
-		tableColumnRemove.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
-		tableColumnRemove.setCellFactory(param -> new TableCell<Seller, Seller>() {
+		tableColumnREMOVE.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+		tableColumnREMOVE.setCellFactory(param -> new TableCell<Seller, Seller>() {
 			private final Button button = new Button("remove");
 
 			@Override
@@ -190,20 +169,25 @@ public class SellerListController implements Initializable, DataChangeListener {
 	}
 
 	private void removeEntity(Seller obj) {
-		Optional<ButtonType> result = Alerts.showConfirmation("Confirmação", "Tem ceteza que deseja deletar?");
+		Optional<ButtonType> result = Alerts.showConfirmation("Confirmation", "Are you sure to delete?");
 
 		if (result.get() == ButtonType.OK) {
-			if (this.SellerServico == null) {
-				throw new IllegalStateException("Serviço está null");
+			if (service == null) {
+				throw new IllegalStateException("Service was null");
 			}
 			try {
-				SellerServico.remove(obj);
-				UpdateTableView();
-			} catch (DbIntegrityException e) {
-				Alerts.Aviso("Error ao remover", null, e.getMessage(), AlertType.ERROR);
+				service.remove(obj);
+				updateTableView();
 			}
-
+			catch (DbIntegrityException e) {
+				Alerts.Aviso("Error removing object", null, e.getMessage(), AlertType.ERROR);
+			}
 		}
 	}
 
+	@Override
+	public void onDataChange() {
+		updateTableView();
+		
+	}
 }

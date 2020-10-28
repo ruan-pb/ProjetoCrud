@@ -57,7 +57,7 @@ public class DepartmentListController implements Initializable, DataChangeListen
 	public void onBtNewAction(ActionEvent evento) {
 		Stage stage = Utils.currentStage(evento);
 		Department dp = new Department();
-		createDialogForm(dp, "/gui/DepartmentForm.fxml", stage);
+		createDialogForm(dp,"/gui/DepartmentForm.fxml", stage);
 	}
 
 	public void setDepartment(DepartmentService dpService) {
@@ -94,9 +94,12 @@ public class DepartmentListController implements Initializable, DataChangeListen
 
 	private synchronized void createDialogForm(Department dp, String absoluteName, Stage parentStage) {
 		try {
+			System.out.println("01");
 			FXMLLoader carregar = new FXMLLoader(getClass().getResource(absoluteName));
+			System.out.println("02");
 
 			Pane age = carregar.load();
+			System.out.println("03");
 
 			DepartmentFormController controller = carregar.getController();
 			controller.setDepartmentService(new DepartmentService());
@@ -147,7 +150,7 @@ public class DepartmentListController implements Initializable, DataChangeListen
 				}
 				setGraphic(button);
 				button.setOnAction(
-						event -> createDialogForm(obj, "/gui/DepartmentForm.fxml", Utils.currentStage(event)));
+						event -> createDialogForm(obj,"/gui/DepartmentForm.fxml", Utils.currentStage(event)));
 			}
 		});
 	}
